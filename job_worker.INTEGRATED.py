@@ -460,9 +460,12 @@ def run_signed_route(job: dict) -> dict:
     with open(EXECUTION_AUTHORIZATION, "rb") as fh:
         raw_receipt = fh.read()
 
+    # IR2: the protection here is STRUCTURAL, not an assertion. This function takes
+    # no cfg parameter, so there is no injection point; the production Config is the
+    # only one that can exist on this path. The equality assert that used to sit here
+    # compared Config() against Config() and could never fire. Per the contract, a
+    # protection whose removal changes nothing is decoration and is deleted.
     cfg = sr.Config()
-    if cfg != sr.Config():
-        raise RuntimeError("NON_PRODUCTION_CONFIG_ON_SIGNED_ROUTE")
 
     return sr.execute_authorized_job(job, raw_receipt, cfg)
 
