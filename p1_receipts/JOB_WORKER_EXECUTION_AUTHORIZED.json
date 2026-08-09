@@ -1,0 +1,13 @@
+{
+  "allowed_cwd": "/Users/kenielmaldonado/claim30_repro",
+  "expires_at": "2026-08-10T04:05:10+00:00",
+  "job_digest": "1160de044fc7c8f34a16ee2bcbb6a99ecb3c4c83ebd0927f9c9ccc30028569b2",
+  "job_id": "P1-SUPERVISED-2026-08-09",
+  "max_wall_seconds": 600,
+  "nonce": "0b88f91dd7147b2c41285ef889a62fa9",
+  "route_manifest_sha256": "b98e4fa34c4c5b6b8d0ce7fdec42ba040dc12ce293d7ee1eb20de5d191b8a7a3",
+  "schema_version": 2,
+  "signature": "-----BEGIN SSH SIGNATURE-----\nU1NIU0lHAAAAAQAAADMAAAALc3NoLWVkMjU1MTkAAAAggrwtneDEQPk2tp6g/vbStvmNlY\nI03T4p83+jGSBxu/EAAAAga20tYWdlbnQtZXhlY3V0aW9uLWF1dGhvcml6YXRpb24AAAAA\nAAAABnNoYTUxMgAAAFMAAAALc3NoLWVkMjU1MTkAAABAPF2tLspVgjx7rv2cEn8kGFQi/j\nfNcJPfAC1dREAxzFwevTwpsqWCRQjfQSOo1K+WEDrYmSHNWiJLZHUwtbgBCQ==\n-----END SSH SIGNATURE-----\n",
+  "state": "EXECUTION_AUTHORIZED",
+  "tool": "repro"
+}
