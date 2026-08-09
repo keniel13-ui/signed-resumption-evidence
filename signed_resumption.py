@@ -357,6 +357,10 @@ def health_state(receipt, cfg: Config, now: datetime | None = None) -> dict:
     if not not_expired(receipt, now):
         return {"state": "PARKED", "tamper": False, "allow": False}
     try:
+        # Must match check_and_spend_nonce. Without this the checker reported
+        # PARKED while the worker proceeded, because authorize() creates the
+        # directory and health_state did not. Found live during P1 preflight.
+        os.makedirs(os.path.dirname(cfg.ledger), exist_ok=True)
         with open(cfg.ledger, "a+", encoding="utf-8") as fh:
             fcntl.flock(fh.fileno(), fcntl.LOCK_EX)
             try:

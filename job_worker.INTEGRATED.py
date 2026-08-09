@@ -424,7 +424,7 @@ def looks_rate_limited(text: str) -> bool:
 
 SIGNED_ROUTE_KEY = "repro"
 SIGNED_RESUMPTION_MODULE = "/Users/kenielmaldonado/signed-resumption-candidate/signed_resumption.py"
-SIGNED_RESUMPTION_SHA256 = "bba4c1a4513db19475bdaec95348b03247f091081bbf89935d145f0c6cf32000"
+SIGNED_RESUMPTION_SHA256 = "41164d8e33aee83d5d166fb6468e1b30da397b01fec31686c7d059a324183a76"
 
 
 def _load_signed_resumption():
@@ -451,8 +451,10 @@ def _load_signed_resumption():
 def run_signed_route(job: dict) -> dict:
     """The one open position. IR1: the receipt comes from the existing
     EXECUTION_AUTHORIZATION constant, read as raw bytes. IR2: the config is the
-    zero-argument production Config and is asserted against a fresh one, so a
-    fixture cannot reach this path."""
+    zero-argument production Config. The protection is STRUCTURAL, not an
+    assertion: this function takes no cfg parameter, so there is no injection
+    point. The equality assert that once sat here was tautological and was
+    deleted as decoration."""
     sr = _load_signed_resumption()
 
     if os.path.realpath(EXECUTION_AUTHORIZATION) != EXECUTION_AUTHORIZATION:
