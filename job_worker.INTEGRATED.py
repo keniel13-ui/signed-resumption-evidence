@@ -440,6 +440,10 @@ def _load_signed_resumption():
         "_signed_resumption_reviewed", SIGNED_RESUMPTION_MODULE
     )
     module = importlib.util.module_from_spec(spec)
+    # dataclasses resolves sys.modules[cls.__module__] while building the frozen
+    # Config. Without this registration @dataclass raises and the signed route
+    # refuses on every call — fail-closed, but a gate with no open position.
+    sys.modules[spec.name] = module
     spec.loader.exec_module(module)
     return module
 
