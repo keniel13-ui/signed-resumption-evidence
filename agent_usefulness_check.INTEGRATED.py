@@ -419,7 +419,7 @@ def queue_worker_row(agent: dict, health: dict, now: float) -> dict:
 
 
 SIGNED_RESUMPTION_MODULE = "/Users/kenielmaldonado/signed-resumption-candidate/signed_resumption.py"
-SIGNED_RESUMPTION_SHA256 = "bba4c1a4513db19475bdaec95348b03247f091081bbf89935d145f0c6cf32000"
+SIGNED_RESUMPTION_SHA256 = "41164d8e33aee83d5d166fb6468e1b30da397b01fec31686c7d059a324183a76"
 EXECUTION_AUTHORIZATION = "/Users/kenielmaldonado/km_agent/JOB_WORKER_EXECUTION_AUTHORIZED.json"
 
 
