@@ -55,6 +55,10 @@ SIGNED_KEYS = (
 _HEX64 = re.compile(r"\A[0-9a-f]{64}\Z")
 _HEX32 = re.compile(r"\A[0-9a-f]{32}\Z")
 _ARMOR = "-----BEGIN SSH SIGNATURE-----"
+# C4: fromisoformat also accepts "YYYY-MM-DD HH:MM:SS+00:00", which is not RFC 3339.
+_RFC3339 = re.compile(
+    r"\A\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?(Z|[+-]\d{2}:\d{2})\Z"
+)
 
 
 @dataclass(frozen=True)
@@ -151,6 +155,8 @@ def validate_schema(receipt) -> None:
     exp = receipt["expires_at"]
     if not isinstance(exp, str):
         raise Refusal("EXPIRES_AT_NOT_A_STRING")
+    if not _RFC3339.match(exp):
+        raise Refusal("EXPIRES_AT_NOT_RFC3339")
     try:
         parsed = datetime.fromisoformat(exp.replace("Z", "+00:00"))
     except ValueError:
@@ -169,6 +175,33 @@ def not_expired(receipt: dict, now: datetime | None = None) -> bool:
     now = now or datetime.now(timezone.utc)
     exp = datetime.fromisoformat(str(receipt["expires_at"]).replace("Z", "+00:00"))
     return exp > now
+
+
+def job_digest(job: dict) -> str:
+    """C1. Binds the job BODY, not only its id. Definition matches the live
+    worker's existing job_digest so a receipt cannot be honoured for one body and
+    spent on another. This definition is pinned here and must be lifted into the
+    contract at the next freeze."""
+    bound = {"assign": job.get("assign"), "id": job.get("id"), "text": job.get("text")}
+    return hashlib.sha256(canonical_json(bound)).hexdigest()
+
+
+# ---------------------------------------------------------------- C3 raw ingress
+
+def parse_receipt(raw):
+    """C3. Size is enforced on the RAW bytes, before json.loads. The envelope must
+    be parsed to reach the sibling signature; what is verified before any field is
+    USED is the canonical payload."""
+    if isinstance(raw, str):
+        raw = raw.encode("utf-8")
+    if not isinstance(raw, (bytes, bytearray)):
+        raise Refusal("RECEIPT_NOT_RAW_BYTES")
+    if len(raw) > MAX_RECEIPT_BYTES:
+        raise Refusal("RECEIPT_TOO_LARGE")
+    try:
+        return json.loads(raw.decode("utf-8"))
+    except (UnicodeDecodeError, json.JSONDecodeError):
+        raise Refusal("RECEIPT_MALFORMED_JSON")
 
 
 # ---------------------------------------------------------------- R1 route manifest
@@ -354,12 +387,14 @@ def authorize(job: dict, receipt, cfg: Config, now: datetime | None = None) -> i
         raise Refusal("EXECUTION_PAUSE_ACTIVE")
     if not isinstance(job, dict):
         raise Refusal("NO_BOUND_JOB")
-    if isinstance(receipt, (bytes, str)) and len(receipt) > MAX_RECEIPT_BYTES:
-        raise Refusal("RECEIPT_TOO_LARGE")
+    if isinstance(receipt, (bytes, bytearray, str)):
+        receipt = parse_receipt(receipt)
 
     validate_schema(receipt)
     if receipt["job_id"] != job.get("id"):
         raise Refusal("RECEIPT_NOT_BOUND_TO_THIS_JOB_ID")
+    if receipt["job_digest"] != job_digest(job):
+        raise Refusal("RECEIPT_NOT_BOUND_TO_THIS_JOB_CONTENT")
     if not not_expired(receipt, now):
         raise Refusal("RECEIPT_EXPIRED")
 
@@ -376,3 +411,55 @@ def authorize(job: dict, receipt, cfg: Config, now: datetime | None = None) -> i
 
     # R2: the signed integer is the executor's timeout, capped by the route ceiling
     return min(int(receipt["max_wall_seconds"]), MAX_WALL)
+
+
+# ---------------------------------------------------------------- C2 executor boundary
+
+def execute_authorized_job(job: dict, receipt, cfg: Config, now: datetime | None = None) -> dict:
+    """C2. The single owned boundary: authorize, re-check the route, run once.
+
+    `authorize` alone was not enough. It returned a timeout and exited, leaving a
+    window in which the script bytes could change before some other caller ran
+    them. The final manifest check below happens immediately before `subprocess`,
+    with nothing in between.
+
+    At-most-once is preserved: the nonce is spent inside `authorize`, so a refusal
+    here loses the job rather than permitting a second attempt. That is the frozen
+    trade in R3.
+    """
+    timeout = authorize(job, receipt, cfg, now)
+
+    # R1/A17: recomputed here, with no gap between the check and the call.
+    if not isinstance(receipt, dict):
+        receipt = parse_receipt(receipt)
+    if receipt["route_manifest_sha256"] != route_manifest_sha256(cfg):
+        raise Refusal("ROUTE_CHANGED_AFTER_AUTHORIZATION")
+
+    try:
+        proc = subprocess.run(
+            list(cfg.argv),
+            cwd=cfg.cwd,
+            capture_output=True,
+            text=True,
+            timeout=timeout,
+            shell=False,
+        )
+    except subprocess.TimeoutExpired:
+        # R2: a timeout is a refusal outcome, never a completion.
+        return {
+            "outcome": "EXECUTION_TIMED_OUT",
+            "success": False,
+            "timeout_used": timeout,
+            "returncode": None,
+        }
+    except OSError:
+        raise Refusal("EXECUTOR_UNAVAILABLE")
+
+    return {
+        "outcome": "EXECUTION_COMPLETED" if proc.returncode == 0 else "EXECUTION_FAILED",
+        "success": proc.returncode == 0,
+        "timeout_used": timeout,
+        "returncode": proc.returncode,
+        "stdout": proc.stdout,
+        "stderr": proc.stderr,
+    }
