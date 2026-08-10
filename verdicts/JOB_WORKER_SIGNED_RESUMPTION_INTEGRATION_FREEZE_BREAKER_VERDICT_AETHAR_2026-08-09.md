@@ -181,7 +181,7 @@ I3’s 19-attack replay is necessary but not sufficient without this invariant.
 |---|---|
 | One bounded **integration addendum** closing I-B1–I-B4 only | Editing `km_agent/job_worker.py` |
 | Independent re-break of freeze+addendum (this seat or other non-maker) | Trust root, agent key, live P1 |
-| | New routes, articles, Ali/German work as part of this gate |
+| | New routes, articles, unrelated outreach as part of this gate |
 | | Treating code PASS `bba4c1a…` as integration PASS |
 
 **Live worker remains `63d4e844…e315f`.** Snapshot equality holds.

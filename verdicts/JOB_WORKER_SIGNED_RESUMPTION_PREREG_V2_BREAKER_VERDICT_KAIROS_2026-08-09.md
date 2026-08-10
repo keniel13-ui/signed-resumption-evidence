@@ -172,5 +172,5 @@ The repair is one bounded v2.1 addendum: route byte/commit binding, actual timeo
 binding, split nonce ablations plus ledger format, ordered health states, and strict
 field/signature types. Body `7cc5d17d…e97f5` remains unchanged. After the maker freezes
 that addendum, the independently assigned breaker re-checks only B1-B5 plus retained
-v2 invariants. No article, Ali/German action, API experiment, or other research lane
+v2 invariants. No article, unrelated outreach, API experiment, or other research lane
 opens while this gate is unresolved.

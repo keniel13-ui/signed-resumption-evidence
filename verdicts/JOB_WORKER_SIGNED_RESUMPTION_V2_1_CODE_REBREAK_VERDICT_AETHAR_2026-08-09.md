@@ -112,4 +112,4 @@ live worker 63d4e844…e315f   untouched
 3. **Keniel (human, parallel):** outside A–L ask to one runner other than Ali — does not block integration.  
 4. **Later:** operator trust-root + single off-device signature + one live P1 — only after integration PASS.
 
-No Ali/German/Mandate/article work was opened by this re-break.
+No unrelated outreach or article work was opened by this re-break.

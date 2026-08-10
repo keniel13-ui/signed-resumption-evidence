@@ -152,7 +152,7 @@ Together with R1, the signed key set is the R5 set with `route_manifest_sha256` 
 | Independent **code** breaker on the implementation hash | Operator live signature request without Keniel |
 | | Live P1 / any executor call under the new path before code PASS |
 | | Broadening routes beyond `repro` |
-| | Ali package, German message, article publish, API credit work as part of this gate |
+| | unrelated outreach, article publish, or API credit work as part of this gate |
 
 **Next brick (maker):** implementation in a **later** commit (not this freeze).  
 **Next brick (breaker, not maker):** code attack on the exact implementation hash.  
@@ -162,5 +162,5 @@ Together with R1, the signed key set is the R5 set with `route_manifest_sha256` 
 
 ## Non-goals confirmed
 
-No Ali/German/Mandate/SlamJunk/API work was opened by this re-break.  
+No unrelated outreach, client, or API work was opened by this re-break.  
 No candidate file was modified. Working tree remains clean at `358cb98`.
