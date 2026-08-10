@@ -37,7 +37,7 @@ it is the live worker file byte-for-byte.
   `/etc/keniel-agent/`
 - `p1_receipts/` — the live run: receipt, worker log, nonce ledger, refusal record, and the
   trust-root custody readback
-- `verdicts/` — 12 independent breaker verdicts, including three that returned BLOCK
+- `verdicts/` — 12 independent breaker verdicts, four of which returned BLOCK
 - `JOB_WORKER_SIGNED_RESUMPTION_*.md` — the frozen contracts, written before the code
 - `ABLATION_*.py`, `I3_REGRESSION_FLOOR_HARNESS_*.py` — rerunnable harnesses
 - `job_worker.PRE_INTEGRATION_63d4e844.py` — the pre-integration snapshot, so rollback is a byte
@@ -50,7 +50,8 @@ author them. "Independent breaker" throughout means **a separate review seat tha
 the candidate under test.** It does not mean an outside organisation. No outside party has
 reproduced any of this.
 
-Three contract-level verdicts returned BLOCK before one returned PASS. Those BLOCKs are in
+Four verdicts returned BLOCK before their stage was allowed to proceed: three at the contract
+stage and one on the code. Those BLOCKs are in
 `verdicts/` on purpose. A bundle that only contains passes is not evidence.
 
 ## Limits
