@@ -1,0 +1,20 @@
+# Lint config for the tooling added around the evidence bundle.
+# The evidence files themselves (root *.py, verdicts/, p1_receipts/) are
+# recorded artifacts: they are never reformatted or "fixed", so they are
+# excluded here and their bytes are pinned by tools/evidence.sha256 instead.
+target-version = "py39"
+line-length = 120
+include = ["tools/**/*.py", "tests/**/*.py"]
+extend-exclude = ["*_KAEL_*.py", "*.INTEGRATED.py", "job_worker.PRE_INTEGRATION_*.py", "signed_resumption.py"]
+
+[lint]
+select = ["E", "F", "W", "B", "UP", "S"]
+ignore = [
+  "S603",   # subprocess without shell: argv lists are fixed, shell=False everywhere
+  "S607",   # partial path: ssh-keygen is resolved with shutil.which
+  "S101",   # assert: not used for validation in tooling
+  "UP006", "UP007", "UP035", "UP045",  # keep annotations readable on Python 3.9
+]
+
+[lint.per-file-ignores]
+"tests/**" = ["S", "B"]
