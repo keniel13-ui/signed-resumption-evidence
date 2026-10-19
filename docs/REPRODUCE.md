@@ -109,6 +109,10 @@ verdicts ran against:
 
   Observed: `19/19 cases pass · total executor calls: 0`, shallowest-check count 0.
 
+  For comparison, the final pre-P1 verdict reports 19/19 with 0 executor calls on the shipped
+  worker using its own harness (`SIGNED_RESUMPTION_FINAL_PRE_P1_BREAK_HARNESS_AETHAR_2026-08-09.py`),
+  which is not in this bundle.
+
 Output of this runner is a reproduction attempt by whoever runs it. It is not a breaker verdict
 and does not change the README's "External reproduction" count.
 
