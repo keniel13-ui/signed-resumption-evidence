@@ -42,6 +42,14 @@ it is the live worker file byte-for-byte.
 - `ABLATION_*.py`, `I3_REGRESSION_FLOOR_HARNESS_*.py` — rerunnable harnesses
 - `job_worker.PRE_INTEGRATION_63d4e844.py` — the pre-integration snapshot, so rollback is a byte
   comparison rather than a reconstruction
+- `docs/ARCHITECTURE.md`: how the pieces fit together, with diagrams
+- `CLAUDE.md`, `CONTRIBUTING.md`: what may and may not change in this repository
+
+The harnesses read their inputs from absolute paths on the author's machine
+(`/Users/kenielmaldonado/...`), so they need those paths replaced before they run anywhere else.
+`I3_REGRESSION_FLOOR_HARNESS_KAEL_2026-08-09.py` asserts worker digest `df506897…`, an
+intermediate build that is not in this bundle. The 19 cases on the shipped worker `e99f2cf5…`
+are reported in the final pre-P1 verdict, which used its own harness (also not in this bundle).
 
 ## How to read the verdicts
 
