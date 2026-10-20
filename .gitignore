@@ -3,3 +3,7 @@ __pycache__/
 state/
 secrets/
 *.out
+# scratch files written by the VERIFY.md walkthrough
+payload.json
+payload.sig
+bad.json
